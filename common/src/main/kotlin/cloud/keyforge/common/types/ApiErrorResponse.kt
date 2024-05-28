@@ -1,0 +1,11 @@
+package cloud.keyforge.common.types
+
+data class ApiErrorResponse(
+    val error: Error
+)
+
+data class Error(
+    val statusCode: Int,
+    val name: String,
+    val message: String
+)
