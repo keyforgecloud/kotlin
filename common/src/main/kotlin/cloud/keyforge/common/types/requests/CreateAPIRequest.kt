@@ -1,8 +1,8 @@
-package cloud.keyforge.common.types
+package cloud.keyforge.common.types.requests
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CreateAPIRequestBody(
+data class CreateAPIRequest(
     val name: String
 )

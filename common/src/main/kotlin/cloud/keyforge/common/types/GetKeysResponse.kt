@@ -1,10 +1,8 @@
 package cloud.keyforge.common.types
 
-data class GetKeysResponse(
-    val pagination: Pagination,
-    val results: List<Key>
-)
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Key(
     val id: String,
     val name: String,
@@ -13,7 +11,7 @@ data class Key(
     val apiOwnerId: String,
     val apiId: String,
     val permissions: List<String>,
-    val meta: Map<String, Any>,
+    val metadata: String?,
     val lastUsed: String,
     val createdAt: String
 )

@@ -3,9 +3,11 @@
  */
 
 plugins {
+    kotlin("plugin.serialization") version "2.0.0"
     id("keyforge.kotlin-library-conventions")
 }
 
 dependencies {
-
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    api("com.google.code.gson:gson:2.11.0")
 }

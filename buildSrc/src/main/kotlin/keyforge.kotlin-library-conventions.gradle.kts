@@ -10,7 +10,7 @@ plugins {
     `java-library`
 }
 
-// ktor
+
 dependencies {
 
 }

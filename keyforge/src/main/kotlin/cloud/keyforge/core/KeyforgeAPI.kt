@@ -1,10 +1,17 @@
 package cloud.keyforge.core
 
-import cloud.keyforge.common.types.API
+import cloud.keyforge.common.types.responses.API
 import cloud.keyforge.common.Constants.KEYFORGE_API_URL
 import cloud.keyforge.common.KeyforgeClient
-import cloud.keyforge.common.types.PaginatedResult
+import cloud.keyforge.common.types.requests.CreateAPIRequest
+import cloud.keyforge.common.types.responses.MessageResponse
+import cloud.keyforge.common.types.responses.PaginatedResult
 import com.google.gson.Gson
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -12,7 +19,7 @@ import java.net.http.HttpResponse
 
 object KeyforgeAPI : KeyforgeClient() {
 
-    private fun getRequest(
+    private inline fun getRequest(
         requestMethod: String,
         url: String,
         bearerToken: String? = null,
@@ -71,7 +78,7 @@ object KeyforgeAPI : KeyforgeClient() {
             throw NullPointerException("Request failed with status code ${response.statusCode()} and body ${response.body()}")
         }
 
-        return Gson().fromJson(response.body(), T::class.java)
+        return Json.decodeFromString<T>(response.body())
     }
 
     fun getAPIs(page: Int = 1, pageSize: Int = 10, accountToken: String? = null): PaginatedResult<API> {
@@ -89,11 +96,13 @@ object KeyforgeAPI : KeyforgeClient() {
         return request("GET", "apis/$finalId", accountToken = accountToken)
     }
 
-    fun createAPI(name: String): API {
-        val body = mapOf(
-            "name" to name
-        )
+    fun createAPI(name: String): API = createAPI(CreateAPIRequest(name))
 
-        return request<API>("POST", "apis", body)
+    fun createAPI(createAPIRequest: CreateAPIRequest): API {
+        return request("POST", "apis", createAPIRequest)
+    }
+
+    fun deleteAPI(apiId: String, accountToken: String? = null): MessageResponse {
+        return request("DELETE", "apis/$apiId", accountToken = accountToken)
     }
 }
