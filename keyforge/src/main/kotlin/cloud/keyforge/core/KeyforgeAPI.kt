@@ -3,15 +3,14 @@ package cloud.keyforge.core
 import cloud.keyforge.common.types.responses.API
 import cloud.keyforge.common.Constants.KEYFORGE_API_URL
 import cloud.keyforge.common.KeyforgeClient
-import cloud.keyforge.common.types.requests.CreateAPIRequest
+import cloud.keyforge.common.types.CreateKeyResponse
+import cloud.keyforge.common.types.Key
+import cloud.keyforge.common.types.requests.CreateAPIRequestBody
+import cloud.keyforge.common.types.requests.CreateKeyRequestBody
 import cloud.keyforge.common.types.responses.MessageResponse
 import cloud.keyforge.common.types.responses.PaginatedResult
 import com.google.gson.Gson
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationStrategy
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -91,18 +90,32 @@ object KeyforgeAPI : KeyforgeClient() {
     }
 
     fun getAPI(apiId: String? = null, accountToken: String? = null): API {
-        val finalId = apiId ?: this.apiId ?: NullPointerException("No API ID provided")
+        val finalId = apiId ?: this.apiId ?: throw NullPointerException("No API ID provided")
 
         return request("GET", "apis/$finalId", accountToken = accountToken)
     }
 
-    fun createAPI(name: String): API = createAPI(CreateAPIRequest(name))
+    fun createAPI(name: String): API = createAPI(CreateAPIRequestBody(name))
 
-    fun createAPI(createAPIRequest: CreateAPIRequest): API {
-        return request("POST", "apis", createAPIRequest)
+    fun createAPI(createAPIRequestBody: CreateAPIRequestBody): API {
+        return request("POST", "apis", createAPIRequestBody)
     }
 
     fun deleteAPI(apiId: String, accountToken: String? = null): MessageResponse {
         return request("DELETE", "apis/$apiId", accountToken = accountToken)
+    }
+
+    /*
+    createKey
+    getKeys
+    getKey
+    deleteKey
+    verifyKey
+     */
+
+    fun createKey(createKeyRequestBody: CreateKeyRequestBody, apiId: String? = null, accountToken: String? = null): CreateKeyResponse {
+        val finalId = apiId ?: this.apiId ?: throw NullPointerException("No API ID provided")
+
+        return request("POST", "apis/$finalId/keys", createKeyRequestBody)
     }
 }
