@@ -21,6 +21,7 @@ object KeyforgeAPI : KeyforgeClient() {
     ): HttpRequest? {
         val request = HttpRequest.newBuilder()
             .uri(URI("$KEYFORGE_API_URL$url"))
+            .header("Content-Type", "application/json")
 
         if (bearerToken != null) request.header("Authorization", "Bearer $bearerToken")
         if (params != null) request.uri(
@@ -33,9 +34,13 @@ object KeyforgeAPI : KeyforgeClient() {
 
         when (requestMethod.lowercase()) {
             "get" -> request.GET()
-            "post" -> request.POST(HttpRequest.BodyPublishers.ofString(body.toString()))
+            "post" -> request.POST(
+                HttpRequest.BodyPublishers.ofString(
+                    Gson().toJson(body)
+                )
+            )
             "delete" -> request.DELETE()
-            else -> error("Invalid request method")
+            else -> throw NullPointerException("Invalid request method")
         }
 
         return request.build()
@@ -44,12 +49,13 @@ object KeyforgeAPI : KeyforgeClient() {
     private inline fun <reified T> request(
         method: String,
         endpoint: String,
-        body: T? = null,
+        body: Any? = null,
         params: Map<String, String>? = null,
         accountToken: String? = null,
     ): T {
         val client = HttpClient.newHttpClient()
-        val bearerToken = accountToken ?: this.accountToken ?: error("No account cloud.keyforge.common.types.API key provided")
+        val bearerToken = accountToken ?: this.accountToken
+        ?: throw NullPointerException("No account cloud.keyforge.common.types.API key provided")
 
         val request = getRequest(
             method,
@@ -62,7 +68,7 @@ object KeyforgeAPI : KeyforgeClient() {
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
 
         if (response.statusCode() != 200) {
-            error("Request failed with status code ${response.statusCode()}")
+            throw NullPointerException("Request failed with status code ${response.statusCode()} and body ${response.body()}")
         }
 
         return Gson().fromJson(response.body(), T::class.java)
@@ -77,4 +83,17 @@ object KeyforgeAPI : KeyforgeClient() {
         return request("GET", "apis", params = params, accountToken = accountToken)
     }
 
+    fun getAPI(apiId: String? = null, accountToken: String? = null): API {
+        val finalId = apiId ?: this.apiId ?: NullPointerException("No API ID provided")
+
+        return request("GET", "apis/$finalId", accountToken = accountToken)
+    }
+
+    fun createAPI(name: String): API {
+        val body = mapOf(
+            "name" to name
+        )
+
+        return request<API>("POST", "apis", body)
+    }
 }
