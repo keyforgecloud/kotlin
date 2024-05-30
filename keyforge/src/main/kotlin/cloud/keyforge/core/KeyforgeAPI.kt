@@ -7,8 +7,10 @@ import cloud.keyforge.common.types.CreateKeyResponse
 import cloud.keyforge.common.types.Key
 import cloud.keyforge.common.types.requests.CreateAPIRequestBody
 import cloud.keyforge.common.types.requests.CreateKeyRequestBody
+import cloud.keyforge.common.types.requests.VerifyKeyRequestBody
 import cloud.keyforge.common.types.responses.MessageResponse
 import cloud.keyforge.common.types.responses.PaginatedResult
+import cloud.keyforge.common.types.responses.VerifiedKeyResponse
 import com.google.gson.Gson
 import kotlinx.serialization.json.Json
 import java.net.URI
@@ -18,7 +20,7 @@ import java.net.http.HttpResponse
 
 object KeyforgeAPI : KeyforgeClient() {
 
-    private inline fun getRequest(
+    private fun getRequest(
         requestMethod: String,
         url: String,
         bearerToken: String? = null,
@@ -45,6 +47,7 @@ object KeyforgeAPI : KeyforgeClient() {
                     Gson().toJson(body)
                 )
             )
+
             "delete" -> request.DELETE()
             else -> throw NullPointerException("Invalid request method")
         }
@@ -95,27 +98,54 @@ object KeyforgeAPI : KeyforgeClient() {
         return request("GET", "apis/$finalId", accountToken = accountToken)
     }
 
-    fun createAPI(name: String): API = createAPI(CreateAPIRequestBody(name))
-
-    fun createAPI(createAPIRequestBody: CreateAPIRequestBody): API {
-        return request("POST", "apis", createAPIRequestBody)
+    fun createAPI(name: String): API {
+        return request("POST", "apis", CreateAPIRequestBody(name))
     }
 
     fun deleteAPI(apiId: String, accountToken: String? = null): MessageResponse {
         return request("DELETE", "apis/$apiId", accountToken = accountToken)
     }
 
-    /*
-    createKey
-    getKeys
-    getKey
-    deleteKey
-    verifyKey
-     */
 
-    fun createKey(createKeyRequestBody: CreateKeyRequestBody, apiId: String? = null, accountToken: String? = null): CreateKeyResponse {
+    fun createKey(
+        name: String? = null,
+        ownerId: String? = null,
+        permissions: List<String>? = null,
+        metadata: Any? = null,
+        apiId: String? = null,
+        accountToken: String? = null
+    ): CreateKeyResponse {
         val finalId = apiId ?: this.apiId ?: throw NullPointerException("No API ID provided")
 
-        return request("POST", "apis/$finalId/keys", createKeyRequestBody)
+        return request(
+            "POST",
+            "apis/$finalId/keys",
+            CreateKeyRequestBody(name, ownerId, permissions, metadata),
+            accountToken = accountToken
+        )
+    }
+
+    fun getKeys(apiId: String? = null, accountToken: String? = null): PaginatedResult<Key> {
+        val finalId = apiId ?: this.apiId ?: throw NullPointerException("No API ID provided")
+
+        return request("GET", "apis/$finalId/keys", accountToken = accountToken)
+    }
+
+    fun getKey(keyId: String, apiId: String? = null, accountToken: String? = null): Key {
+        val finalId = apiId ?: this.apiId ?: throw NullPointerException("No API ID provided")
+
+        return request("GET", "apis/$finalId/keys/$keyId", accountToken = accountToken)
+    }
+
+    fun deleteKey(keyId: String, apiId: String? = null, accountToken: String? = null): MessageResponse {
+        val finalId = apiId ?: this.apiId ?: throw NullPointerException("No API ID provided")
+
+        return request("DELETE", "apis/$finalId/keys/$keyId", accountToken = accountToken)
+    }
+
+    fun verifyKey(token: String, apiId: String? = null, accountToken: String? = null): VerifiedKeyResponse {
+        val finalId = apiId ?: this.apiId ?: throw NullPointerException("No API ID provided")
+
+        return request("POST", "verify", VerifyKeyRequestBody(finalId, token), accountToken = accountToken)
     }
 }

@@ -1,6 +1,7 @@
 package cloud.keyforge.common.types
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
 @Serializable
 data class Key(
@@ -11,7 +12,7 @@ data class Key(
     val apiOwnerId: String,
     val apiId: String,
     val permissions: List<String>,
-    val metadata: String?,
-    val lastUsed: String,
+    val metadata: JsonObject,
+    val lastUsed: String?,
     val createdAt: String
 )

@@ -1,13 +1,13 @@
-package cloud.keyforge.common.types
+package cloud.keyforge.common.types.responses
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 
 @Serializable
-data class VerifyKeyResponse(
+data class VerifiedKeyResponse(
     val valid: Boolean,
     val keyId: String,
     val ownerId: String,
     val permissions: List<String>,
-    val metadata: JsonObject?
+    val metadata: JsonObject
 )

@@ -1,34 +1,54 @@
 package cloud.keyforge.core
 
 import cloud.keyforge.common.types.requests.CreateKeyRequestBody
+import com.google.gson.GsonBuilder
 
 fun main() {
     KeyforgeAPI.accountToken = "L4klt6r4TW3zaS213OSGTCii2nCSHUlKwuSZXn8TdtFAen5NmhwYqegW3AaWFnoR"
 
-//    KeyforgeAPI.getAPIs(accountToken = "eJxKuaCi95y1VIO2jwSJXax9z5mS4OFOLAcOjSunvNrO2zFiDTko23V5IzVoWSjk").let {
-//        println("Get APIS[0]: ${it.results.first()}")
-//    }
-
-/*    val apis = KeyforgeAPI.getAPIs()
-    apis.results.forEach { api ->
+    KeyforgeAPI.getAPIs(1, 50).results.forEach { api ->
+        println(" - Deleting API '${api.name}' (${api.id})")
         KeyforgeAPI.deleteAPI(api.id)
     }
 
-    val api = KeyforgeAPI.createAPI("My API")
-    println("API: $api")*/
+    println("Deleted all APIs\n")
 
-    KeyforgeAPI.createKey(CreateKeyRequestBody(
+    val apis = KeyforgeAPI.getAPIs().results
+    val createdAPI = KeyforgeAPI.createAPI("Keyforge Test API")
+    val api = KeyforgeAPI.getAPI(createdAPI.id)
 
-    ), "api_ehgjKiw7jjQMj2SfgROxfA3v")
-        .let(::println)
+    println("Created API: '${createdAPI.name}' (${createdAPI.id})")
+    println("Fetched created API by ID: '${api.name}' (${api.id})")
+    println("Exists in old list? ${apis.any { it.id == createdAPI.id }}")
+    println("Exists in new list? ${KeyforgeAPI.getAPIs().results.any { it.id == createdAPI.id }}")
 
-//    apis.forEach { api ->
-//        println("API: ${api.id}")
-//    }
+    KeyforgeAPI.apiId = createdAPI.id
 
-//    KeyforgeAPI
-//        .createAPI("My name")
-//        .let {
-//            println("Create API: $it")
-//        }
+    val createdKey = KeyforgeAPI.createKey(
+
+        name = "Keyforge Test Key",
+        ownerId = "test",
+        permissions = listOf("read", "write"),
+        metadata = mapOf("key" to "value"),
+        apiId = createdAPI.id
+    )
+
+    val key = KeyforgeAPI.getKey(createdKey.keyId)
+    val verifyKey = KeyforgeAPI.verifyKey(createdKey.token)
+
+    println("\nCreated Key: '${createdKey.keyId}' (${createdKey.token})")
+    println("Fetched created Key by ID: '${key.name}' (${key.id})")
+    println("Verified Key:")
+    println(" - Key ID: ${verifyKey.keyId}")
+    println(" - Valid: ${verifyKey.valid}")
+    println(" - Owner ID: ${verifyKey.ownerId}")
+    println(" - Permissions: ${verifyKey.permissions}")
+    println(
+        " - Metadata: ${
+            GsonBuilder()
+                .setPrettyPrinting()
+                .create()
+                .toJson(verifyKey.metadata)
+        }"
+    )
 }
