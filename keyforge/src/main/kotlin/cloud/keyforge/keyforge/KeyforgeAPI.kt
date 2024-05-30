@@ -64,7 +64,6 @@ object KeyforgeAPI : KeyforgeClient() {
     ): T {
         val client = HttpClient.newHttpClient()
         val bearerToken = accountToken ?: this.accountToken
-        ?: throw NullPointerException("No account cloud.keyforge.common.types.API key provided")
 
         val request = getRequest(
             method,

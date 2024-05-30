@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "cloud.keyforge"
-version = "0.0.3"
+version = "0.0.4"
 
 dependencies {
     implementation("org.apache.commons:commons-text")
