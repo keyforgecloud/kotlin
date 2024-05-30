@@ -6,14 +6,19 @@ plugins {
     id("keyforge.kotlin-library-conventions")
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("maven-publish")
+
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 group = "cloud.keyforge"
-version = "0.0.2"
+version = "0.0.3"
 
 dependencies {
     implementation("org.apache.commons:commons-text")
-    implementation(project(":common"))
+//    implementation(project(":common"))
+
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    api("com.google.code.gson:gson:2.11.0")
 }
 
 
