@@ -1,6 +1,5 @@
-package cloud.keyforge.core
+package cloud.keyforge.keyforge
 
-import cloud.keyforge.common.types.requests.CreateKeyRequestBody
 import com.google.gson.GsonBuilder
 
 fun main() {

@@ -111,3 +111,4 @@ nb-configuration.xml
 ### MacOS ###
 .DS_Store
 .env
+gradle.properties

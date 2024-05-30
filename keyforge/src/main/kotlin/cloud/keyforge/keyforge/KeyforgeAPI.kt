@@ -1,4 +1,4 @@
-package cloud.keyforge.core
+package cloud.keyforge.keyforge
 
 import cloud.keyforge.common.types.responses.API
 import cloud.keyforge.common.Constants.KEYFORGE_API_URL
