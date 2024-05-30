@@ -3,7 +3,7 @@
  */
 
 plugins {
-    id("keyforge.kotlin-application-conventions")
+    id("keyforge.kotlin-library-conventions")
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("maven-publish")
 }
@@ -15,6 +15,8 @@ dependencies {
     implementation("org.apache.commons:commons-text")
     implementation(project(":common"))
 }
+
+
 
 publishing {
     repositories {
