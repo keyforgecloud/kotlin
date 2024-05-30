@@ -4,12 +4,12 @@
 
 plugins {
     id("keyforge.kotlin-application-conventions")
-
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("maven-publish")
 }
 
 group = "cloud.keyforge"
-version = "0.0.1"
+version = "0.0.2"
 
 dependencies {
     implementation("org.apache.commons:commons-text")
